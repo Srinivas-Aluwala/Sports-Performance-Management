@@ -7,9 +7,65 @@ const SignupForm = () => {
   const navigate = useNavigate();
 
 
+/*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*  Fetch usernames before sign up for unique usernames
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*/
+
 
 
   const submitHandler = () => {
+   const signupObj = {
+    "userInfo" : {
+"username" : "jackkhalis@gmail.com",
+"password" : "Jack510",
+"firstName" : "Jack",
+"lastName" : "Khalis",
+"height" : "5.10",
+"weight" : "72",
+"gender" : "Male",
+"category" : "Sprint",
+"birthDate" : "03/09/1992",
+"photoUrl" :"https://img.favpng.com/6/24/10/stock-photography-running-sport-royalty-free-png-favpng-0PdkJM3B9rJnQ4TWbYgCy5LyY.jpg"
+    },
+    "userRole" : [
+        {
+ "roleId" : "3",
+ "roleName" : "ATHLETE"
+    }
+    ]
+};
       navigate(pages.root.children.login.path, {replace : true});
   }
   return (
