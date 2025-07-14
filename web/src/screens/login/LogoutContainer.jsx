@@ -10,11 +10,32 @@ const LogoutContainer = () => {
   
     const navReff = useRef({ navigate });
   
-    useEffect(() => {
-           dispatch(logout());
+
+    const logoutFunc = async () => {
+        console.log("logout initiated ");
+        
+        const res  =await fetch('http://localhost:9000/logout', {
+      method: 'POST',
+      credentials: 'include', 
+    });
+  
+            console.log(res);
+
+        if(res.ok){
+        console.log("logout sucess ");
+
+        dispatch(logout());
            localStorage.removeItem("user")
         navReff.current.navigate(pages.root.children.home.path);
-      
+        }else{
+            alert("logout failed")
+                    navReff.current.navigate(pages.root.children.home.path);
+
+        }
+    }
+
+    useEffect(()=>{
+        logoutFunc();
     }, []);
 
     return (<>

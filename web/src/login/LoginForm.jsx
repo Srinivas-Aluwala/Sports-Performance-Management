@@ -6,6 +6,10 @@ import { pages } from "../routes/pages";
 import { useDispatch } from "react-redux";
 import { login } from "../store/store";
 import { roleIds } from "../util/roles";
+import { useMutation } from "@tanstack/react-query";
+import { loginRequest } from "../api/apis";
+
+
 
 function LoginForm() {
   const [username, setUsername] = useState("");
@@ -22,20 +26,79 @@ function LoginForm() {
     setPassword(e.target.value);
   };
 
+    const {
+      data : loginData,
+    error : loginError,
+    isError : isLoginError,
+    isPending : isLoginPending,
+    isSuccess : isLoginSuccess,
+    failureReason : loginFailureReason,
+    mutate : loginMutate,
+    } = useMutation({
+    mutationKey : ['login'],
+      mutationFn : loginRequest,
+      onMutate,
+      onSuccess : ()=>{
+
+        
+        dispatch(login({roleId : roleIds.ADMIN}));
+        navigate(pages.root.children.admin.path, {replace : true});
+      },
+      onSettled,
+      onError
+    })
   
-  const loginHandler = () => {
+    
+  const loginHandler = async() => {
     console.log(username, password);
     
-    if (username === "admin" && password === "admin") {
-      dispatch(login({roleId : roleIds.ADMIN}))
-     localStorage.setItem("user", JSON.stringify({
-  isUserLoggedIn: true,
-  loggedInUser: roleIds.ADMIN
-}))
+     loginMutate({username, password})
 
-      navigate(pages.root.children.admin.path, {replace : true});
+// try{
 
-    } else if (username === "coache" && password === "coache") {
+
+//       const res = await  fetch("http://localhost:9000/login", {
+//   method: "POST",
+//   credentials: "include", 
+//   headers: { "Content-Type": "application/json" },
+//   body: JSON.stringify({ username, password })
+// });
+
+
+//   if (!res.ok) {
+//     const err = await res.text();
+//     throw new Error(`Login failed: ${err}`);
+//   }
+
+//   const data = await res.json(); 
+
+//   console.log(data); 
+
+  
+//       dispatch(login({roleId : roleIds.ADMIN}))
+//      localStorage.setItem("user", JSON.stringify({
+//   isUserLoggedIn: true,
+//   loggedInUser: roleIds.ADMIN
+//     }))
+  
+//     }
+//     catch(error){
+//       alert(error)
+//     }
+
+ 
+
+
+  //     navigate(pages.root.children.admin.path, {replace : true});
+
+  //  if (username === "admin" && password === "admin") {
+  //     dispatch(login({roleId : roleIds.ADMIN}))
+
+  //     navigate(pages.root.children.admin.path, {replace : true});
+
+  //   } else
+
+       if (username === "coache" && password === "coache") {
       dispatch(login({roleId : roleIds.COACHE}))
 
       navigate(pages.root.children.coache.path, {replace : true});
