@@ -1,36 +1,45 @@
 package com.sportsmanagement.modal;
 
-import org.springframework.security.core.GrantedAuthority;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
-@Entity
 @Data
-@ToString
+@ToString(exclude = { "user" })
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name ="ROLES")
-public class UserRole implements GrantedAuthority{
-    
+@Entity(name = "Coaches")
+@Builder
+public class Coaches {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private Long roleId;
-    private String roleName;
+    private Long coacheId;
 
-     @Override
-    public String getAuthority() {
-        return roleName; 
-    }
+    private String firstName;
+
+    private String lastName;
+
+    private String email;
+
+    private String gender;
+
+    private String category;
+
+    private String birthDate;
+
+    private String photoUrl;
+
+    @OneToOne(mappedBy = "coache")
+    private Users user;
 
 }

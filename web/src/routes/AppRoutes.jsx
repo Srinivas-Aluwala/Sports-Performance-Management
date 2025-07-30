@@ -9,12 +9,15 @@ function generateRoutes(pagesObj) {
     return Object.values(pagesObj).map((page) => {
 
         const route = {
+            index :page.index,
             path: page.path,
             element: page.private ? (
                 <PrivateRoute component={page.element} accessibleRoles={page.roleId} />
             ) : (
                 page.element
-            )
+            ),
+            loader : page?.loader,
+            action : page?.action
         };
 
         if (page.children) {
