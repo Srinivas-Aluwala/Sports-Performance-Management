@@ -16,11 +16,10 @@ function LoginForm() {
 
   const [password, setPassword] = useState("");
 
-  const [userType, setUserType] = useState("");
+  const dispatch = useDispatch();
 
+  const navigate = useNavigate();
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
   const UsernameChangeHandler = (e) => {
     setUsername(e.target.value);
   };
@@ -43,115 +42,43 @@ function LoginForm() {
 
       const roleId = data.roles[0].roleId;
 
-      console.log(data.roles);
 
       switch (roleId) {
 
         case roleIds.ADMIN: {
           dispatch(login({ roleId: roleIds.ADMIN }));
-
-          localStorage.setItem("user", JSON.stringify({
-            isUserLoggedIn: true,
-            loggedInUser: roleIds.ADMIN
-          }))
           navigate(pages.root.children.admin.path, { replace: true });
         };
+          break;
+
         case roleIds.COACHE: {
+
           dispatch(login({ roleId: roleIds.COACHE }));
-          localStorage.setItem("user", JSON.stringify({
-            isUserLoggedIn: true,
-            loggedInUser: roleIds.COACHE
-          }))
           navigate(pages.root.children.coache.path, { replace: true });
         };
+          break;
+
         case roleIds.ATHLETE: {
           dispatch(login({ roleId: roleIds.ATHLETE }));
-          localStorage.setItem("user", JSON.stringify({
-            isUserLoggedIn: true,
-            loggedInUser: roleIds.ATHLETE
-          }))
           navigate(pages.root.children.athlete.path, { replace: true });
         };
+          break;
+
         default: return;
 
       }
-
-
-
     },
-    onError: () => {
-      alert("Error logging in")
+    onError: (e) => {
+      alert("Error logging in",e)
     }
   })
 
 
   const loginHandler = async () => {
-    console.log(username, password);
 
-     loginMutate({ username, password })
-
-    // try{
-
-
-    //       const res = await  fetch("http://localhost:9000/login", {
-    //   method: "POST",
-    //   credentials: "include", 
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ username, password })
-    // });
-
-
-    //   if (!res.ok) {
-    //     const err = await res.text();
-    //     throw new Error(`Login failed: ${err}`);
-    //   }
-
-    //   const data = await res.json(); 
-
-    //   console.log(data); 
-
-
-    //       dispatch(login({roleId : roleIds.ADMIN}))
-    //      localStorage.setItem("user", JSON.stringify({
-    //   isUserLoggedIn: true,
-    //   loggedInUser: roleIds.ADMIN
-    //     }))
-
-    //     }
-    //     catch(error){
-    //       alert(error)
-    //     }
-
-
-
-
-
-    if (username === "admin" && password === "admin") {
-      dispatch(login({ roleId: roleIds.ADMIN }))
-      localStorage.setItem("user", JSON.stringify({
-        isUserLoggedIn: true,
-        loggedInUser: roleIds.ADMIN
-      }))
-      navigate(pages.root.children.admin.path, { replace: true });
-
-    } 
-
-    //    if (username === "coache" && password === "coache") {
-    //   dispatch(login({roleId : roleIds.COACHE}))
-
-    //   navigate(pages.root.children.coache.path, {replace : true});
-
-    // } else if (username === "athlete" && password === "athlete") {
-    //   dispatch(login({roleId : roleIds.ATHLETE}))
-
-    //   navigate(pages.root.children.athlete.path, {replace : true});
-
-    // }
+    loginMutate({ username, password })
   };
 
-  const handleRadio = (e,{value}) => {
-    setUserType(value);
-  }
   return (
     <>
       <div className="flex flex-grow  items-center justify-center bg-gray-100 px-4">

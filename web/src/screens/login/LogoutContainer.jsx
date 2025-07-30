@@ -7,34 +7,32 @@ import { pages } from "../../routes/pages";
 const LogoutContainer = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
-  
+
     const navReff = useRef({ navigate });
-  
+
 
     const logoutFunc = async () => {
         console.log("logout initiated ");
-        
-        const res  =await fetch('http://localhost:9000/logout', {
-      method: 'POST',
-      credentials: 'include', 
-    });
-  
-            console.log(res);
 
-        if(res.ok){
-        console.log("logout sucess ");
+        const res = await fetch('http://localhost:9000/logout', {
+            method: 'POST',
+            credentials: 'include',
+        });
 
-        dispatch(logout());
-           localStorage.removeItem("user")
-        navReff.current.navigate(pages.root.children.home.path);
-        }else{
+        console.log(res);
+
+        if (res.ok) {
+            dispatch(logout());
+            navReff.current.navigate(pages.root.children.home.path);
+
+        } else {
             alert("logout failed")
-                    navReff.current.navigate(pages.root.children.home.path);
+            navReff.current.navigate(pages.root.children.home.path);
 
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         logoutFunc();
     }, []);
 

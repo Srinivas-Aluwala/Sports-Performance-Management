@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sportsmanagement.VO.AdminUIVO;
 import com.sportsmanagement.VO.AthletesUIVO;
 import com.sportsmanagement.VO.AthletesVO;
 import com.sportsmanagement.VO.CoachesUIVO;
@@ -223,6 +224,7 @@ public class AuthServiceImp implements AuthService {
 
             UsersVO userDetails = (UsersVO) authentication.getPrincipal();
 
+            System.out.println(userDetails + " userDetails");
             String userRole = userDetails.getRoles().iterator().next().getRoleName();
 
             AthletesVO athleteDetails = userDetails.getAthlete();
@@ -230,6 +232,8 @@ public class AuthServiceImp implements AuthService {
 
             AthletesUIVO responseAthlete = null;
             CoachesUIVO responseCoache = null;
+            AdminUIVO responseAdmin = null;
+
 
             switch (userRole) {
                 case "athlete": {
@@ -268,10 +272,23 @@ public class AuthServiceImp implements AuthService {
 
                 }
                     break;
+                     case "admin": {
+                    responseAdmin = AdminUIVO.builder()
+                            .userId(userDetails.getUserId())
+                            .username(userDetails.getUsername())
+                            .roles(userDetails.getRoles())
+                            .build();
+                            System.out.println(responseAdmin);
+
+
+                }
+                    break;
 
                 default:
                     break;
             }
+
+                                        System.out.println(responseAdmin + "    " + responseCoache + "   " + responseAthlete );
 
             if (responseCoache != null) {
 
@@ -279,11 +296,16 @@ public class AuthServiceImp implements AuthService {
                         .header(HttpHeaders.SET_COOKIE, cookie.toString())
                         .body(responseCoache);
 
-            } else {
+            } else if(responseAthlete != null) {
 
                 return ResponseEntity.ok()
                         .header(HttpHeaders.SET_COOKIE, cookie.toString())
                         .body(responseAthlete);
+            }else {
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                        .body(responseAdmin);
             }
 
         } else {

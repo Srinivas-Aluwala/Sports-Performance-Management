@@ -1,30 +1,47 @@
-import {configureStore, createSlice} from '@reduxjs/toolkit'
+import { configureStore, createSlice } from '@reduxjs/toolkit'
 
 
-  const user = JSON.parse(localStorage.getItem("user"));
+const getInitialAuthState = () => {
 
-console.log(user);
+    try {
 
-const authSlice = createSlice({
-    name : "auth",
-    initialState : user 
-    ? {
-        isUserLoggedIn : true,
-        loggedInUser : Number(user.loggedInUser),
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user && user.isUserLoggedIn) {
+
+            return {
+                isUserLoggedIn: true,
+                loggedInUser: Number(user.loggedInUser),
+            };
+        } else {
+            return {
+                isUserLoggedIn: false,
+                loggedInUser: null,
+            };
+        }
+    } catch (e) {
+        console.error("Error parsing user from localStorage", err);
     }
-    : {
-        isUserLoggedIn : false,
-        loggedInUser : null,
-    },
-    reducers : {
-        login : (state, action) => {
-            console.log(action);
-            
+    return {
+        isUserLoggedIn: false,
+        loggedInUser: null,
+    };
+}
+const authSlice = createSlice({
+    name: "auth",
+    initialState: getInitialAuthState(),
+    reducers: {
+        login: (state, action) => {
+          localStorage.setItem("user", JSON.stringify({
+            isUserLoggedIn: true,
+            loggedInUser: action.payload.roleId
+          }))
             state.isUserLoggedIn = true;
             state.loggedInUser = action.payload.roleId
         },
-        logout : (state) => {
+        logout: (state) => {
 
+            localStorage.removeItem("user");
             state.isUserLoggedIn = false;
             state.loggedInUser = null
         },
@@ -32,11 +49,11 @@ const authSlice = createSlice({
 });
 
 const store = configureStore({
-    reducer : {
-        auth : authSlice.reducer,
+    reducer: {
+        auth: authSlice.reducer,
     }
 });
 
-export const {login, logout} = authSlice.actions;
+export const { login, logout } = authSlice.actions;
 
 export default store;
