@@ -2,37 +2,33 @@ package com.sportsmanagement.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.sportsmanagement.modal.UserInfo;
+import com.sportsmanagement.VO.UsersVO;
 import com.sportsmanagement.modal.UserRole;
 
-public class CustomUserDetails extends UserInfo implements UserDetails {
+
+public class CustomUserDetails extends UsersVO implements UserDetails {
 
     private String username;
     private String password;
     Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(UserInfo byUsername) {
+    public CustomUserDetails(UsersVO byUsername) {
+
+
+
         System.out.println(byUsername + "CustomUserDetails");
+        super.setUserId(byUsername.getUserId());  
         this.username = byUsername.getUsername();
         this.password = byUsername.getPassword();
-        super.setUserId(byUsername.getUserId());
-        super.setFirstName(byUsername.getFirstName());
-        super.setLastName(byUsername.getLastName());
-        super.setGender(byUsername.getGender());
-        super.setHeight(byUsername.getHeight());
-        super.setWeight(byUsername.getWeight());
-        super.setBirthDate(byUsername.getBirthDate());
-        super.setPhotoUrl(byUsername.getPhotoUrl());
-        super.setCategory(byUsername.getCategory());
         super.setRoles(byUsername.getRoles());
+        super.setAthlete(byUsername.getAthlete());
+        super.setCoache(byUsername.getCoache());
 
         List<GrantedAuthority> auths = new ArrayList<>();
 

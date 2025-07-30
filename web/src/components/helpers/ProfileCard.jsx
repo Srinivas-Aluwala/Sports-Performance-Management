@@ -1,4 +1,4 @@
-const ProfileCard = ({details}) => {
+const ProfileCard = ({details, profileStyle}) => {
 
 
 
@@ -11,7 +11,7 @@ const ProfileCard = ({details}) => {
     return(<>
     <div className="flex justify-start gap-40 px-20 py-20 mx-auto">
         <div className=" h-52 w-52">
-            <img className='h-full w-full  rounded-full' src={details.image} />
+            <img className={profileStyle} src={details.image} />
         </div>
         <div>
             <div className="text-2xl font-semibold">{details.name}</div>

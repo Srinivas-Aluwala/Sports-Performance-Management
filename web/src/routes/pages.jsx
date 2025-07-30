@@ -14,9 +14,19 @@ const AthleteDashboardContainer = lazy(() => import('../screens/athlete/AthleteD
 const CoacheDashboardContainer = lazy(() => import('../screens/coache/CoacheDashboardContainer.jsx'));
 const NewsContainer = lazy(() => import('../screens/news/NewsContainer.jsx'));
 const EventsContainer = lazy(() => import('../screens/events/EventsContainer.jsx'));
+const EventDetails = lazy(() => import('../screens/events/EventDetails.jsx'));
+const Events = lazy(() => import('../screens/events/Events.jsx'));
+
+// import {loader as fetchEventDetails, action as registerForEvent} from '../screens/events/EventDetails.jsx';
+
+
+
+
 const ResultsContainer = lazy(() => import('../screens/results/ResultsContainer.jsx'));
 const CoachesContainer = lazy(() => import('../screens/coache/CoachesContainer.jsx'));
 const AthletesContainer = lazy(() => import('../screens/athlete/AthletesContainer.jsx'));
+
+
 
 //Child containers
 const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard.jsx'));
@@ -26,8 +36,8 @@ const CoacheDashboard = lazy(() => import('../components/coache/CoacheDashboard.
 const AthleteDashboard = lazy(() => import('../components/athlete/AthleteDashboard.jsx'));
 const CreateEvent = lazy(() => import('../components/admin/manage/CreateEvent.jsx'));
 const CreateMeet = lazy(() => import('../components/admin/manage/CreateMeet.jsx'));
-const AthleteProfile = lazy(() => import('../components/athlete/AthleteProfile.jsx'));
-const AthletesHome = lazy(() => import('../components/athlete/AthletesHome.jsx'));
+const AthleteProfile = lazy(() => import('../components/athletes/AthleteProfile.jsx'));
+const AthletesHome = lazy(() => import('../components/athletes/AthletesHome.jsx'));
 const CoacheProfile = lazy(() => import('../components/coache/CoacheProfile.jsx'));
 
 export const pages = {
@@ -59,6 +69,21 @@ export const pages = {
                         events: {
                                 path: "/events",
                                 element: <EventsContainer />,
+                                 children: {
+                                        eventsList: {
+                                                index: true,
+                                                element: <Events />,
+                                                // loader : fetchEventDetails,
+                                                // action : registerForEvent
+                                        },
+                                        details: {
+                                                path: ':eventId',
+                                                element: <EventDetails />,
+                                                // loader : fetchEventDetails,
+                                                // action : registerForEvent
+                                        },
+
+                                }
                         },
                         results: {
                                 path: "/results",

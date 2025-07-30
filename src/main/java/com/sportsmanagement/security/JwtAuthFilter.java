@@ -44,17 +44,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("access_token")) {
                     token = cookie.getValue();
+                    username = jwtService.extractUsername(token);
                 }
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            logger.info("loadUserByUsername started");
+            // logger.info("loadUserByUsername started");
             UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
-            logger.info("loadUserByUsername ended");
+            // logger.info("loadUserByUsername ended");
 
-            logger.info(userDetails + "JwtAuthFilter");
+            // logger.info(userDetails + "JwtAuthFilter");
 
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

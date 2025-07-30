@@ -14,9 +14,10 @@ const AthleteProfile = () => {
 
         };
 
+        const profileStyle = 'h-full w-full  rounded-full'
     return (<>
     <div className="px-40">
-        <ProfileCard  details={profileDetails}/>
+        <ProfileCard profileStyle={profileStyle}  details={profileDetails}/>
         <div>
 
         </div>

@@ -1,28 +1,98 @@
+import { QueryClient } from "@tanstack/react-query";
+import { default as axios } from 'axios'
+
+
+export const queryClient = new QueryClient();
 
 
 export const loginRequest = async ({ username, password }) => {
 
 
     try {
-        const { data, status: statusCode } = await axios.post(`http://localhost:9000/login`, {
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            params: {
-                username,
-                password,
-            },
-        });
+        const { data, status: statusCode } = await axios.post(`http://localhost:9000/login`, { username, password },
+            { 
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            });
 
         if (statusCode === 200 && data) {
 
             return data;
         }
+
+        return
     } catch (e) {
-        alert(e);
+        throw e;
+    }
+}
+
+export const logoutRequest = async () => {
+
+
+    try {
+        const { data, status: statusCode } = await axios.post(`http://localhost:9000/logout`,
+            { 
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            });
+
+        if (statusCode === 200 && data) {
+
+            return data;
+        }
+
+        return
+    } catch (e) {
+        throw e;
+    }
+}
+
+export const signUpRequest = async (formData) => {
+
+    console.log(formData);
+    
+
+    try {
+        const { data, status: statusCode } = await axios.post(`http://localhost:9000/register`, formData,
+            { 
+                withCredentials: true,
+                headers: {
+
+                },
+            });
+
+        if (statusCode === 200 && data) {
+
+            return data;
+        }
+
+        return
+    } catch (e) {
+        throw e;
     }
 }
 
 
+export const fetchUserNames = async () => {
+
+
+    try {
+        const { data, status: statusCode } = await axios.get(`http://localhost:9000/fetchUsernames`,
+            { 
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            });
+
+        if (statusCode === 200 && data) {
+
+            return data;
+        }
+
+        return
+    } catch (e) {
+        throw e;
+    }
+}
 
 
 // function* handleLogInRequest(action) {

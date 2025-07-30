@@ -34,10 +34,9 @@ public class SecurityConfig {
         return new UserDetailsServiceImpl();
     }
 
-      // CORS configuration
+    // CORS configuration
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        System.out.println("SecurityConfig");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:5173"); // Allow frontend origin
         configuration.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, etc.)
@@ -56,11 +55,15 @@ public class SecurityConfig {
                 .cors(c->c.configurationSource(corsConfigurationSource())) // Apply CORS configuration
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/login","/register","/logout").permitAll()
+                        .requestMatchers("/login","/register","/logout","/fetchUsernames", "/adminRegister").permitAll() // Allowing public routes access
+                        .requestMatchers("/coaches/*").permitAll()  // Allowing public routes access
+                        .requestMatchers("/athletes/*").permitAll()  // Allowing public routes access
+                        .requestMatchers("/events/*").permitAll()  // Allowing public routes access
+                        .requestMatchers("/results/*").permitAll()  // Allowing public routes access
+                        .requestMatchers("/news/*").permitAll()  // Allowing public routes access
                         .requestMatchers("/athlete/**").hasAuthority("ATHLETE")
                         .requestMatchers("/coache/**").hasAuthority("COACHE")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
-
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -77,7 +80,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService());
-        // authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
 
