@@ -1,4 +1,4 @@
-package com.sportsmanagement.dto;
+package com.sportsmanagement.VO.auth;
 
 
 import lombok.AllArgsConstructor;
@@ -7,16 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class AthleteSignupDTO {
+public class AthletesVO {
     
-    private String firstname;
+    private Long athleteId;
 
-    private String lastname;
-        
-    private String email;
+    private String firstName;
+
+    private String lastName;
 
     private String height;
 
@@ -27,4 +27,7 @@ public class AthleteSignupDTO {
     private String category;
 
     private String birthDate;
+
+    private String photoUrl;
+
 }

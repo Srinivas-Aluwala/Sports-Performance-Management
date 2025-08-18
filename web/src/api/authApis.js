@@ -1,65 +1,14 @@
 import { QueryClient } from "@tanstack/react-query";
-import { default as axios } from 'axios'
+import api from "../util/axiosInstance";
 
 
 export const queryClient = new QueryClient();
 
 
-export const loginRequest = async ({ username, password }) => {
-
-
-    try {
-        const { data, status: statusCode } = await axios.post(`http://localhost:9000/login`, { username, password },
-            { 
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
-            });
-
-        if (statusCode === 200 && data) {
-
-            return data;
-        }
-
-        return
-    } catch (e) {
-        throw e;
-    }
-}
-
-export const logoutRequest = async () => {
-
-
-    try {
-        const { data, status: statusCode } = await axios.post(`http://localhost:9000/logout`,
-            { 
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
-            });
-
-        if (statusCode === 200 && data) {
-
-            return data;
-        }
-
-        return
-    } catch (e) {
-        throw e;
-    }
-}
-
 export const signUpRequest = async (formData) => {
 
-    console.log(formData);
-    
-
     try {
-        const { data, status: statusCode } = await axios.post(`http://localhost:9000/register`, formData,
-            { 
-                withCredentials: true,
-                headers: {
-
-                },
-            });
+        const { data, status: statusCode } = await api.post("/register", formData);
 
         if (statusCode === 200 && data) {
 
@@ -77,11 +26,17 @@ export const fetchUserNames = async () => {
 
 
     try {
-        const { data, status: statusCode } = await axios.get(`http://localhost:9000/fetchUsernames`,
-            { 
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
-            });
+        const { data, status: statusCode } = await api.get("/fetchUsernames");
+
+            
+        if (statusCode === 401) {
+
+            const refreshData = await refreshToken();
+
+            if (refreshData.ok) {
+                return await logoutRequest();
+            }
+        }
 
         if (statusCode === 200 && data) {
 
@@ -93,6 +48,58 @@ export const fetchUserNames = async () => {
         throw e;
     }
 }
+
+
+export const loginRequest = async ({ username, password }) => {
+
+
+    try {
+
+        const { data, status: statusCode } = await api.post('/login', { username, password });
+
+        if (statusCode === 200 && data) {
+
+            return data;
+        }
+
+        return
+    } catch (e) {
+        throw e;
+    }
+}
+
+export const refreshToken = async () => {
+    try {
+        const { data, status: statusCode } = await api.post("/refreshToken",{});
+
+        if (statusCode === 200 && data) {
+            return data;
+        }
+        return;
+
+    } catch (e) {
+        throw e;
+    }
+}
+
+
+export const logoutRequest = async () => {
+    try {
+        const { data, status: statusCode } = await api.post("/logout",{});
+
+        if (statusCode === 200 && data) {            
+            return data;
+        }
+
+        return;
+
+    } catch (e) {
+        throw e;vV
+    }
+}
+
+
+
 
 
 // function* handleLogInRequest(action) {

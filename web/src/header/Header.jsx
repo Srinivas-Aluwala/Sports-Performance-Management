@@ -3,7 +3,7 @@ import { pages } from "../routes/pages";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon, Label } from "semantic-ui-react";
-import { getRoute } from "../util/util";
+import { getRoute } from "../util/constants";
 import { login } from "../store/store";
 
 const Header = () => {

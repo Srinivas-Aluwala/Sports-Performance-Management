@@ -1,4 +1,4 @@
-package com.sportsmanagement.dto;
+package com.sportsmanagement.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

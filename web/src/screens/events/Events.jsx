@@ -9,8 +9,20 @@ import {
     Modal,
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query';
+import { fetchEvents } from '../../api/publicApis';
 
 const Events = () => {
+
+
+    const { data, error, isLoading, isSuccess } = useQuery({
+        queryKey : "events",
+        queryFn : fetchEvents,
+        retry: false
+
+    })
+
+
 
 
     const events = [{

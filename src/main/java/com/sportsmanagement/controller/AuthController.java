@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sportsmanagement.VO.StatusVO;
-import com.sportsmanagement.dto.UserLoginDTO;
-import com.sportsmanagement.dto.UsersSignupDTO;
+import com.sportsmanagement.VO.auth.StatusVO;
+import com.sportsmanagement.dto.auth.UserLoginDTO;
+import com.sportsmanagement.dto.auth.UsersSignupDTO;
 import com.sportsmanagement.security.UserDetailsServiceImpl;
 import com.sportsmanagement.service.auth.AuthServiceImp;
 
@@ -41,8 +42,6 @@ public class AuthController {
             @RequestPart("imageFile") MultipartFile imageFile) {
 
         try {
-            System.out.println(usersSignupDTO + " " + imageFile);
-
             return userService.addUser(usersSignupDTO, imageFile);
 
         } catch (Exception e) {
@@ -55,11 +54,7 @@ public class AuthController {
     @PostMapping(value = "/adminRegister")
     public StatusVO userRegister(@RequestBody UsersSignupDTO usersSignupDTO, HttpServletRequest request) {
 
-      
-
         try {
-            System.out.println(usersSignupDTO);
-
             return userService.addAdmin(usersSignupDTO, request);
 
         } catch (Exception e) {
@@ -88,12 +83,15 @@ public class AuthController {
 
         SecurityContextHolder.clearContext();
 
-        // HttpSession session = request.getSession(false);
-        // if (session != null) {
-        // session.invalidate();
-        // }
+        ResponseCookie deleteAccessCookie = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
 
-        ResponseCookie deleteCookie = ResponseCookie.from("access_token", "")
+        ResponseCookie deleteRefreshCookie = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
@@ -102,8 +100,8 @@ public class AuthController {
                 .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body("Logged out");
+                .header(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString(), deleteRefreshCookie.toString())
+                .body("Logout Successfull");
     }
 
     @GetMapping("/fetchUsernames")
@@ -116,6 +114,12 @@ public class AuthController {
             e.printStackTrace();
             throw new RuntimeException("Fetching Usernames Failed: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
+        System.out.println(refreshToken + " refreshToken");
+        return userService.reAuthenticateUser(refreshToken);
     }
 
 }

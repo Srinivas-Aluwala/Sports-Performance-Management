@@ -1,6 +1,6 @@
-package com.sportsmanagement.dto;
+package com.sportsmanagement.dto.auth;
 
-import com.sportsmanagement.VO.UsersVO;
+import com.sportsmanagement.VO.auth.UsersVO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

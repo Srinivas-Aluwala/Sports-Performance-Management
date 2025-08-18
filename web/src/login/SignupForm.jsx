@@ -3,7 +3,7 @@ import { Button, Form, FormGroup, FormInput, FormRadio, FormSelect, Icon, Input,
 import { pages } from "../routes/pages";
 import { useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchUserNames, queryClient, signUpRequest } from "../api/apis";
+import { fetchUserNames, queryClient, signUpRequest } from "../api/authApis";
 
 const SignupForm = () => {
 
@@ -389,7 +389,7 @@ const SignupForm = () => {
 
   }
 
-  const deleteImageHAndler = () => {
+  const deleteImageHandler = () => {
     setFilename(null);
     setFilesize(null);
     {
@@ -520,7 +520,7 @@ const SignupForm = () => {
                 />
                 {filename ?
                   <div className="flex flex-col border  w-full border-black-200 rounded pl-2">
-                    <Icon className="self-end cursor-pointer" name="close" onClick={deleteImageHAndler} />
+                    <Icon className="self-end cursor-pointer" name="close" onClick={deleteImageHandler} />
                     <p className="pr-6">{filename}</p>
                     <p>{filesize}</p>
                   </div>

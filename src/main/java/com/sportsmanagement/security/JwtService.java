@@ -20,6 +20,12 @@ public class JwtService {
 
     public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
 
+    public static final long ACCESS_TOKEN_EXPIRY = 1000 * 60 * 15; // 15 mins
+
+    public static final long REFRESH_TOKEN_EXPIRY = 1000L * 60 * 60 * 24 * 7; // 7 days
+
+    //////////////////////////////////// util claims //////////////////////////////
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -51,22 +57,26 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    /////////////////////////////////// token genertion
+    /////////////////////////////////// //////////////////////////////////////
 
-
-    public String GenerateToken(String username){
+    public String GenerateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        return createToken(claims, username, ACCESS_TOKEN_EXPIRY);
     }
 
+    public String GenerateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username, REFRESH_TOKEN_EXPIRY);
+    }
 
-
-    private String createToken(Map<String, Object> claims, String username) {
+    private String createToken(Map<String, Object> claims, String username, long expiryTime) {
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1))
+                .setExpiration(new Date(System.currentTimeMillis() + expiryTime))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
@@ -74,4 +84,20 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public boolean isRefreshTokenValid(String token) {
+
+        try {
+
+            String username = extractUsername(token); // any exceptions with extracting the usernae would through
+                                                      // exception so try catch & to ceck if the token is malformed
+                                                      System.out.println(username);
+
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
 }

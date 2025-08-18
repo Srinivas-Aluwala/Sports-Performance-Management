@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .cors(c->c.configurationSource(corsConfigurationSource())) // Apply CORS configuration
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/login","/register","/logout","/fetchUsernames", "/adminRegister").permitAll() // Allowing public routes access
+                        .requestMatchers("/login","/register","/logout","/fetchUsernames", "/adminRegister", "/refreshToken").permitAll() // Allowing public routes access
                         .requestMatchers("/coaches/*").permitAll()  // Allowing public routes access
                         .requestMatchers("/athletes/*").permitAll()  // Allowing public routes access
                         .requestMatchers("/events/*").permitAll()  // Allowing public routes access

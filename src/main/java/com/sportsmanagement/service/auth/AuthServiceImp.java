@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,17 +24,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sportsmanagement.VO.AdminUIVO;
-import com.sportsmanagement.VO.AthletesUIVO;
-import com.sportsmanagement.VO.AthletesVO;
-import com.sportsmanagement.VO.CoachesUIVO;
-import com.sportsmanagement.VO.CoachesVO;
-import com.sportsmanagement.VO.StatusVO;
-import com.sportsmanagement.VO.UsersVO;
-import com.sportsmanagement.dto.AthleteSignupDTO;
-import com.sportsmanagement.dto.CoacheSignupDTO;
-import com.sportsmanagement.dto.UserLoginDTO;
-import com.sportsmanagement.dto.UsersSignupDTO;
+import com.sportsmanagement.VO.auth.AdminUIVO;
+import com.sportsmanagement.VO.auth.AthletesUIVO;
+import com.sportsmanagement.VO.auth.AthletesVO;
+import com.sportsmanagement.VO.auth.CoachesUIVO;
+import com.sportsmanagement.VO.auth.CoachesVO;
+import com.sportsmanagement.VO.auth.StatusVO;
+import com.sportsmanagement.VO.auth.UsersVO;
+import com.sportsmanagement.dto.auth.AthleteSignupDTO;
+import com.sportsmanagement.dto.auth.CoacheSignupDTO;
+import com.sportsmanagement.dto.auth.UserLoginDTO;
+import com.sportsmanagement.dto.auth.UsersSignupDTO;
 import com.sportsmanagement.modal.Athletes;
 import com.sportsmanagement.modal.Coaches;
 import com.sportsmanagement.modal.UserRole;
@@ -66,6 +67,22 @@ public class AuthServiceImp implements AuthService {
 
     @Autowired
     private JwtService jwtService;
+
+
+    private final String storagePath;
+
+
+    @Autowired
+    public AuthServiceImp(String storagePath){
+
+        this.userRepo = userRepo;
+        this.athleteRepo = athleteRepo;
+        this.coacheRepo = coacheRepo;
+        this.userRoleRepo = userRoleRepo;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.storagePath = storagePath;
+    }
 
     @Override
     public StatusVO addUser(UsersSignupDTO usersSignupDTO, @RequestParam MultipartFile imageFile) {
@@ -119,18 +136,18 @@ public class AuthServiceImp implements AuthService {
 
             case "coache": {
 
-                MultipartFile file = imageFile;
-                String fileName = file.getOriginalFilename();
+                // MultipartFile file = imageFile;
+                // String fileName = file.getOriginalFilename();
 
-                File image = new File("E:\\SportsManagement\\coache", fileName);
+                // File image = new File("E:\\SportsManagement\\coache", fileName);
 
-                try {
+                // try {
 
-                    file.transferTo(image);
-                } catch (Exception e) {
+                //     file.transferTo(image);
+                // } catch (Exception e) {
 
-                }
-                String imagePath = image.getAbsolutePath();
+                // }
+                // String imagePath = image.getAbsolutePath();
 
                 saveCoache = Coaches.builder()
                         .firstName(coacheSignupDTO.getFirstname())
@@ -154,22 +171,24 @@ public class AuthServiceImp implements AuthService {
 
         MultipartFile file = imageFile;
         String fileName = file.getOriginalFilename();
-
         long userId = user.getUserId();
-        // String fileName = file.getOriginalFilename();
-        // String userId = fileName.substring(0, fileName.indexOf("_"));
-        // Path folderPath = Paths.get(audioFilePath, userId.toString());
-        // Path filePath = folderPath.resolve(file.getOriginalFilename());
-        // file.transferTo(filePath.toFile());
         File image = null;
 
         try {
-            Path folderPath = Paths.get("E:\\SportsManagement\\users\\images", String.valueOf(userId));
+            String subFolder = "users/images/" + String.valueOf(userId);
+            Path folderPath = Paths.get(storagePath, subFolder);
             Files.createDirectories(folderPath);
             Path filePath = folderPath.resolve(fileName);
             image = filePath.toFile();
             file.transferTo(image);
         } catch (Exception e) {
+
+            userRepo.deleteById(userId);
+
+            return StatusVO.builder()
+                .statusId(0)
+                .statusMessage("User Registration failed")
+                .build();
 
         }
 
@@ -212,14 +231,24 @@ public class AuthServiceImp implements AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtService.GenerateToken(authRequestDTO.getUsername());
+            String access_jwt = jwtService.GenerateToken(authRequestDTO.getUsername());
 
-            ResponseCookie cookie = ResponseCookie.from("access_token", jwt)
+            String refresh_jwt = jwtService.GenerateRefreshToken(authRequestDTO.getUsername());
+
+            ResponseCookie access_cookie = ResponseCookie.from("access_token", access_jwt)
                     .httpOnly(true)
                     .secure(true)
                     .path("/")
                     .sameSite("Strict")
-                    .maxAge(Duration.ofHours(1))
+                    .maxAge(Duration.ofMinutes(30))
+                    .build();
+
+            ResponseCookie refresh_cookie = ResponseCookie.from("refresh_token", refresh_jwt)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .sameSite("Strict")
+                    .maxAge(Duration.ofDays(7))
                     .build();
 
             UsersVO userDetails = (UsersVO) authentication.getPrincipal();
@@ -233,7 +262,6 @@ public class AuthServiceImp implements AuthService {
             AthletesUIVO responseAthlete = null;
             CoachesUIVO responseCoache = null;
             AdminUIVO responseAdmin = null;
-
 
             switch (userRole) {
                 case "athlete": {
@@ -272,14 +300,13 @@ public class AuthServiceImp implements AuthService {
 
                 }
                     break;
-                     case "admin": {
+                case "admin": {
                     responseAdmin = AdminUIVO.builder()
                             .userId(userDetails.getUserId())
                             .username(userDetails.getUsername())
                             .roles(userDetails.getRoles())
                             .build();
-                            System.out.println(responseAdmin);
-
+                    System.out.println(responseAdmin);
 
                 }
                     break;
@@ -288,23 +315,21 @@ public class AuthServiceImp implements AuthService {
                     break;
             }
 
-                                        System.out.println(responseAdmin + "    " + responseCoache + "   " + responseAthlete );
-
             if (responseCoache != null) {
 
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                        .header(HttpHeaders.SET_COOKIE, access_cookie.toString(), refresh_cookie.toString())
                         .body(responseCoache);
 
-            } else if(responseAthlete != null) {
+            } else if (responseAthlete != null) {
 
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                        .header(HttpHeaders.SET_COOKIE, access_cookie.toString(), refresh_cookie.toString())
                         .body(responseAthlete);
-            }else {
+            } else {
 
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                        .header(HttpHeaders.SET_COOKIE, access_cookie.toString(), refresh_cookie.toString())
                         .body(responseAdmin);
             }
 
@@ -312,6 +337,41 @@ public class AuthServiceImp implements AuthService {
             throw new UsernameNotFoundException("invalid user request..!!");
         }
 
+    }
+
+    @Override
+    public ResponseEntity<?> reAuthenticateUser(String refreshToken) {
+
+        if (refreshToken == null || !(jwtService.isRefreshTokenValid(refreshToken))) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired refresh token");
+        }
+
+        String username = jwtService.extractUsername(refreshToken);
+
+        String access_jwt = jwtService.GenerateToken(username);
+
+        String refresh_jwt = jwtService.GenerateRefreshToken(username);
+
+        ResponseCookie access_cookie = ResponseCookie.from("access_token", access_jwt)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(Duration.ofMinutes(30))
+                .build();
+
+        ResponseCookie refresh_cookie = ResponseCookie.from("refresh_token", refresh_jwt)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(Duration.ofDays(7))
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, access_cookie.toString(), refresh_cookie.toString())
+                .body("Token Refreshed. ");
     }
 
     @Override
@@ -326,7 +386,7 @@ public class AuthServiceImp implements AuthService {
         String secret = "admin";
 
         String value = request.getHeader("admin");
-        System.out.println("value  -  " +value);
+        System.out.println("value  -  " + value);
         if (secret.equals(value)) {
 
             String userRole = usersSignupDTO.getRole();
@@ -349,8 +409,8 @@ public class AuthServiceImp implements AuthService {
 
             saveUser.setPassword(new BCryptPasswordEncoder().encode(usersSignupDTO.getPassword()));
             saveUser.getRoles().add(ds);
-System.out.println(saveUser);
-           Users user = userRepo.save(saveUser);
+            System.out.println(saveUser);
+            Users user = userRepo.save(saveUser);
 
             if (user != null) {
                 return StatusVO.builder()

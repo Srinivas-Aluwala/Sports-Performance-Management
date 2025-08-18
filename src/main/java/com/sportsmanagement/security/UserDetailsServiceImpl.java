@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.sportsmanagement.VO.AthletesVO;
-import com.sportsmanagement.VO.CoachesVO;
-import com.sportsmanagement.VO.UsersVO;
+import com.sportsmanagement.VO.auth.AthletesVO;
+import com.sportsmanagement.VO.auth.CoachesVO;
+import com.sportsmanagement.VO.auth.UsersVO;
 import com.sportsmanagement.modal.Athletes;
 import com.sportsmanagement.modal.Coaches;
 import com.sportsmanagement.modal.Users;

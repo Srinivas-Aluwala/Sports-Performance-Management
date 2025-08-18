@@ -10,3 +10,10 @@ export const getRoute = (logedInUser) => {
         default : return "/"
     }
 }
+
+
+export const baseUrl = 'http://localhost:9000';
+
+export const TOKEN_EXPIRED = "TOKEN_EXPIRED";
+
+export const TOKEN_INVALID = "TOKEN_INVALID";

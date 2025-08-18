@@ -33,29 +33,49 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
+            String path = request.getServletPath();
+
 
         // if(authHeader != null && authHeader.startsWith("Bearer ")){
         // token = authHeader.substring(7);
         // username = jwtService.extractUsername(token);
         // }
 
+    if (path.equals("/refreshToken")) {
+        filterChain.doFilter(request, response);
+        return;
+        }
+
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("access_token")) {
                     token = cookie.getValue();
-                    username = jwtService.extractUsername(token);
+                    try {
+                        username = jwtService.extractUsername(token);
+                    } catch (io.jsonwebtoken.ExpiredJwtException ex) {
+                        System.out.println("hii token expired");
+                        SecurityContextHolder.clearContext();
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter()
+                                .write("{\"error\":\"Access token expired\", \"errorType\":\"TOKEN_EXPIRED\"}");
+                        return;
+                    } catch (Exception e) {
+                        SecurityContextHolder.clearContext();
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter()
+                                .write("{\"error\":\"Invalid access token\", \"errorType\":\"TOKEN_INVALID\"}");
+                        return;
+                    }
                 }
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // logger.info("loadUserByUsername started");
             UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
-            // logger.info("loadUserByUsername ended");
-
-            // logger.info(userDetails + "JwtAuthFilter");
 
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

@@ -1,4 +1,4 @@
-package com.sportsmanagement.VO;
+package com.sportsmanagement.VO.auth;
 
 import java.util.HashSet;
 import java.util.Set;

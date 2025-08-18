@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.sportsmanagement.VO.UsersVO;
+import com.sportsmanagement.VO.auth.UsersVO;
 import com.sportsmanagement.modal.UserRole;
 
 

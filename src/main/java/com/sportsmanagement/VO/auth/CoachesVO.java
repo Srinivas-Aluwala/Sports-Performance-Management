@@ -1,35 +1,22 @@
-package com.sportsmanagement.VO;
+package com.sportsmanagement.VO.auth;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import com.sportsmanagement.modal.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AthletesUIVO {
+public class CoachesVO {
 
-    private Long userId;
-    
-    private Long athleteId;
-
-    private String username;
+    private Long coacheId;
 
     private String firstName;
 
     private String lastName;
-
-    private String height;
-
-    private String weight;
 
     private String gender;
 
@@ -39,5 +26,4 @@ public class AthletesUIVO {
 
     private String photoUrl;
 
-    private Set<UserRole> roles = new HashSet<>();
 }

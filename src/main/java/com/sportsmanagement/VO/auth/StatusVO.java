@@ -1,4 +1,4 @@
-package com.sportsmanagement.VO;
+package com.sportsmanagement.VO.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
