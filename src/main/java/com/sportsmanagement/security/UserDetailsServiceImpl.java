@@ -31,7 +31,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Users user = userRepo.findByUsername(username);
 
-        System.out.println(user + " UserDetailsServiceImpl");
 
         Athletes athlete = user.getAthlete();
         Coaches coache = user.getCoache();
@@ -81,7 +80,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         logger.info("User Authenticated Successfully..!!!");
 
-        System.out.println(uservo + " uservo");
 
         return new CustomUserDetails(uservo);
 

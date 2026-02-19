@@ -1,8 +1,10 @@
 package com.sportsmanagement.security;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,12 +43,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // username = jwtService.extractUsername(token);
         // }
 
+        System.out.println("RequestURL " + request.getServletPath());
+
     if (path.equals("/refreshToken")) {
         filterChain.doFilter(request, response);
         return;
         }
 
         Cookie[] cookies = request.getCookies();
+System.out.println("Cookies: " + Arrays.toString(cookies));
+
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("access_token")) {
@@ -77,9 +83,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
 
+                    System.out.println("userDetails " + userDetails);
+                                        System.out.println("valid token " + jwtService.validateToken(token, userDetails));
+
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
+                                        System.out.println("authenticationToken " + authenticationToken);
 
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);

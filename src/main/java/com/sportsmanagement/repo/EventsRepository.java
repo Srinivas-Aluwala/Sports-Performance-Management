@@ -1,5 +1,6 @@
 package com.sportsmanagement.repo;
 
+
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -19,5 +20,7 @@ public interface EventsRepository extends CrudRepository<Events, Long> {
     @Query("UPDATE Events a SET a.photoUrl = :photoUrl WHERE a.eventId = :eventId")
     int updatePhotoUrlByEventId(@Param("photoUrl") String photoUrl, @Param("eventId") long eventId);
 
-
+    @Query("SELECT e.photoUrl FROM Events e WHERE e.eventId = :eventId")
+    String fetchEventImageUrls( @Param("eventId") long eventId);
+    
 }

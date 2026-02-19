@@ -56,11 +56,11 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/login","/register","/logout","/fetchUsernames", "/adminRegister", "/refreshToken").permitAll() // Allowing public routes access
-                        .requestMatchers("/coaches/*").permitAll()  // Allowing public routes access
-                        .requestMatchers("/athletes/*").permitAll()  // Allowing public routes access
-                        .requestMatchers("/events/*").permitAll()  // Allowing public routes access
-                        .requestMatchers("/results/*").permitAll()  // Allowing public routes access
-                        .requestMatchers("/news/*").permitAll()  // Allowing public routes access
+                        .requestMatchers("/api/**").permitAll()  // Allowing public routes access
+                        // .requestMatchers("/athletes/*").permitAll()  // Allowing public routes access
+                        // .requestMatchers("/events/*").permitAll()  // Allowing public routes access
+                        // .requestMatchers("/results/*").permitAll()  // Allowing public routes access
+                        // .requestMatchers("/news/*").permitAll()  // Allowing public routes access
                         .requestMatchers("/athlete/**").hasAuthority("ATHLETE")
                         .requestMatchers("/coache/**").hasAuthority("COACHE")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")

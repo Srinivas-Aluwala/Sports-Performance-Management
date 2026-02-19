@@ -4,7 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 function FloatingButton() {
   return (
-    <Fab color="primary" aria-label="edit">
+    <Fab style={{minWidth: '50px'}} color="primary" aria-label="edit">
       <EditIcon />
     </Fab>
   );

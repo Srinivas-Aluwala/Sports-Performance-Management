@@ -34,6 +34,7 @@ public class CustomUserDetails extends UsersVO implements UserDetails {
 
         for (UserRole role : byUsername.getRoles()) {
 
+            System.out.println(role.getRoleName().toUpperCase());
             auths.add(new SimpleGrantedAuthority(role.getRoleName().toUpperCase()));
         }
         this.authorities = auths;

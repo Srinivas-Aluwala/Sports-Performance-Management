@@ -11,8 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sportsmanagement.VO.auth.StatusVO;
 import com.sportsmanagement.dto.admin.CreateEventDTO;
+import com.sportsmanagement.dto.admin.CreateMeetDTO;
 import com.sportsmanagement.modal.Events;
+import com.sportsmanagement.modal.Meets;
 import com.sportsmanagement.repo.EventsRepository;
+import com.sportsmanagement.repo.MeetRepository;
 
 @Service
 public class AdminServiceImp implements AdminService {
@@ -20,12 +23,16 @@ public class AdminServiceImp implements AdminService {
     @Autowired
     private EventsRepository eventRepo;
 
+      @Autowired
+    private MeetRepository meetRepo;
+
     private String storagePath;
 
     @Autowired
-    public AdminServiceImp(EventsRepository eventRepo, String storagePath) {
+    public AdminServiceImp(EventsRepository eventRepo, String storagePath, MeetRepository meetRepo) {
 
         this.eventRepo = eventRepo;
+        this.meetRepo = meetRepo;
         this.storagePath = storagePath;
     }
 
@@ -71,6 +78,7 @@ public class AdminServiceImp implements AdminService {
 
             String filePath = image.getAbsolutePath();
 
+            
 
            int  saveSuccess = eventRepo.updatePhotoUrlByEventId(filePath, eventId);
 
@@ -89,4 +97,32 @@ public class AdminServiceImp implements AdminService {
                 .build();
     }
 
+    @Override
+    public StatusVO addMeet(CreateMeetDTO createmeetDTO) {
+
+        Meets saveMeet = Meets.builder()
+                        .meetName(createmeetDTO.getMeetName())
+                        .description(createmeetDTO.getDescription())
+                        .build();
+
+
+        Meets  saveSuccess = meetRepo.save(saveMeet);
+
+        if(saveSuccess.getMeetId() == 0){
+        
+            return StatusVO.builder()
+                .statusId(0)
+                .statusMessage("Error Saving event")
+                .build();
+        }
+    
+          return StatusVO.builder()
+                .statusId(1)
+                .statusMessage("Meet saved successfully")
+                .build();
+    }
+
+
+
+    
 }

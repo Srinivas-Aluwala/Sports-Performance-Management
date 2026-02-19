@@ -22,7 +22,7 @@ const AthleteDashboard = () => {
     return (<>
 
         <h1>AthleteDashboard</h1>
-        <div className="flex align-top gap-40 px-20 py-20">
+        <div className="flex align-top justify-between mr-20">
         <div className="px-40">
             <ProfileCard  profileStyle={profileStyle}  details={profileDetails} />
             </div>

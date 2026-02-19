@@ -7,7 +7,37 @@ export const queryClient = new QueryClient();
 export const fetchEvents = async () => {
 
     try {
-        const { data, status: statusCode } = await api.get('/fetchEvents',
+        const { data, status: statusCode } = await api.get('/api/fetchEvents',
+            {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" },
+            });
+
+        if (statusCode === 401) {
+
+            const refreshData = await refreshToken();
+
+            if (refreshData.ok) {
+                return await logoutRequest();
+            }
+        }
+
+        if (statusCode === 200 && data) {
+
+            return data;
+        }
+
+        return
+    } catch (e) {
+        throw e;
+    }
+}
+
+
+export const fetchEventImages = async (eventId) => {
+
+    try {
+        const { data, status: statusCode } = await api.get(`/api/fetchEventImages/${eventId}`,
             {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
